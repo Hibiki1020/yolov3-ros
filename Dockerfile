@@ -69,6 +69,17 @@ RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc && \
 RUN source /opt/ros/noetic/setup.bash && \
     source /home/ros_catkin_ws/devel/setup.bash
 
+RUN mkdir -p /home/pretrained_models && \
+	cd /home/pretrained_models && \
+	wget https://github.com/ultralytics/yolov3/releases/download/v9.5.0/yolov3.pt && \
+	wget https://github.com/ultralytics/yolov3/releases/download/v9.5.0/yolov3-spp.pt && \
+	wget https://github.com/ultralytics/yolov3/releases/download/v9.5.0/yolov3-tiny.pt
+
+RUN cd /home
+
+# https://github.com/ultralytics/yolov3/releases/download/v9.5.0/yolov3.pt
+# https://github.com/ultralytics/yolov3/releases/download/v9.5.0/yolov3-spp.pt
+# https://github.com/ultralytics/yolov3/releases/download/v9.5.0/yolov3-tiny.pt
 
 # ---------------------------------------------------  Extras Below  ---------------------------------------------------
 
