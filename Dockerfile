@@ -45,6 +45,13 @@ RUN mkdir -p /home/ros_catkin_ws/src && \
 	echo "export ROS_PACKAGE_PATH=\${ROS_PACKAGE_PATH}:/home/ros_catkin_ws" >> ~/.bashrc && \
 	echo "export ROS_WORKSPACE=/home/ros_catkin_ws" >> ~/.bashrc
 
+RUN mkdir -p /home/pretrained_models && \
+	cd /home/pretrained_models && \
+	wget https://github.com/ultralytics/yolov3/releases/download/v9.5.0/yolov3.pt && \
+	wget https://github.com/ultralytics/yolov3/releases/download/v9.5.0/yolov3-spp.pt && \
+	wget https://github.com/ultralytics/yolov3/releases/download/v9.5.0/yolov3-tiny.pt
+
+
 ## cmk
 RUN echo "function cmk(){\n	lastpwd=\$OLDPWD \n	cpath=\$(pwd) \n cd /home/ros_catkin_ws \n catkin_make \$@ \n cd \$cpath \n	OLDPWD=\$lastpwd \n}" >> ~/.bashrc
 
@@ -54,7 +61,10 @@ ARG CACHEBUST=1
 WORKDIR /home
 
 # Copy contents
-COPY . /home/ros_catkin_ws/src
+COPY . /home/ros_catkin_ws/src/yolov3-ros/
+
+RUN cd /home/ros_catkin_ws/src/yolov3-ros/ros && \
+	chmod +x ros_detect.py
 
 RUN     cd /home/ros_catkin_ws && \
 		/bin/bash -c "source /opt/ros/noetic/setup.bash; catkin_make -DPYTHON_EXECUTABLE=/usr/bin/python3" && \
@@ -69,13 +79,12 @@ RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc && \
 RUN source /opt/ros/noetic/setup.bash && \
     source /home/ros_catkin_ws/devel/setup.bash
 
-RUN mkdir -p /home/pretrained_models && \
-	cd /home/pretrained_models && \
-	wget https://github.com/ultralytics/yolov3/releases/download/v9.5.0/yolov3.pt && \
-	wget https://github.com/ultralytics/yolov3/releases/download/v9.5.0/yolov3-spp.pt && \
-	wget https://github.com/ultralytics/yolov3/releases/download/v9.5.0/yolov3-tiny.pt
-
 RUN cd /home
+
+RUN pip3 install rospkg
+
+RUN source /opt/ros/noetic/setup.bash && \
+    source /home/ros_catkin_ws/devel/setup.bash
 
 # https://github.com/ultralytics/yolov3/releases/download/v9.5.0/yolov3.pt
 # https://github.com/ultralytics/yolov3/releases/download/v9.5.0/yolov3-spp.pt
