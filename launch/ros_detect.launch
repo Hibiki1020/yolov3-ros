@@ -1,0 +1,53 @@
+<launch>
+
+    <!-- image_transport -->
+    <node pkg="image_transport" type="republish" name="republish_f" args="compressed raw">
+        <remap from="in" to="/front_right_camera/color/image_raw"/>
+		<remap from="out" to="/camera_f/decompressed_image"/>
+	</node>
+    <node pkg="image_transport" type="republish" name="republish_l" args="compressed raw">
+		<remap from="in" to="/realsense_l/color/image_raw"/>
+		<remap from="out" to="/camera_l/decompressed_image"/>
+	</node>
+	<node pkg="image_transport" type="republish" name="republish_b" args="compressed raw">
+		<remap from="in" to="/realsense_b/color/image_raw"/>
+		<remap from="out" to="/camera_b/decompressed_image"/>
+	</node>
+	<node pkg="image_transport" type="republish" name="republish_r" args="compressed raw">
+		<remap from="in" to="/realsense_r/color/image_raw"/>
+		<remap from="out" to="/camera_r/decompressed_image"/>
+	</node>
+
+    <node pkg="yolov3_ros_infer" name="yolov3_ros_infer" type="ros_detect.py" output="screen">
+        <param name="subscribe_topic_name" value="/camera_f/decompressed_image" />
+        <param name="advertise_topic_name" value="/inferenced_image_front" />
+        <param name="view-img" value="True" type="bool" />
+        <param name="save-txt" value="False" type="bool" />
+        <param name="save-conf" value="False" type="bool" />
+        <param name="save-crop" value="False" type="bool" />
+        <param name="nosave" value="False" type="bool" />
+        <param name="agnostic-nms" value="False" type="bool" />
+        <param name="argment" value="False" type="bool" />
+        <param name="update" value="False" type="bool" />
+        <param name="project" value="run/detect" />
+        <param name="name" value="exp" />
+        <param name="exist-ok" value="False" type="bool" />
+        <param name="hide-labels" value="False" type="bool" />
+        <param name="hide-conf" value="False" type="bool" />
+        <!--Choose Model Type from 'yolov3.pt', 'yolov3-spp.pt', 'yolov3-tiny.pt'-->
+        <param name="weigts_saved_directory" value="/home/pretrained_models" />
+        <param name="weight_type" value="yolov3.pt" />
+        <!--Choose Device 0, 1, 2, 3, cpu-->
+        <param name="device" value="0" />
+        <!--Inference Parameter-->
+        <param name="img-size" value="640" type="int" />
+        <param name="conf-thres" value="0.25" type="float" />
+        <param name="iou-thres" value="0.45" type="float" />
+        <param name="max-det" value="1000" type="int" />
+        <param name="line-thickness" value="3" type="int" />
+        <!--nargs関係-->
+        <!--param name="classes" nargs='+' type="int"-->
+    </node>
+</launch>
+
+        
