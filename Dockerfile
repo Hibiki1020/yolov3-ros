@@ -71,7 +71,6 @@ RUN     cd /home/ros_catkin_ws && \
         cd /home
 
 # Set environment variables
-ENV HOME=/home
 
 RUN echo "source /opt/ros/noetic/setup.bash" >> ~/.bashrc && \
     source ~/.bashrc
@@ -84,7 +83,10 @@ RUN cd /home
 RUN pip3 install rospkg
 
 RUN source /opt/ros/noetic/setup.bash && \
-    source /home/ros_catkin_ws/devel/setup.bash
+	cd /home/ros_catkin_ws && \
+    source devel/setup.bash
+
+ENV HOME=/home/ros_catkin_ws
 
 # https://github.com/ultralytics/yolov3/releases/download/v9.5.0/yolov3.pt
 # https://github.com/ultralytics/yolov3/releases/download/v9.5.0/yolov3-spp.pt

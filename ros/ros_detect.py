@@ -83,8 +83,11 @@ class ROS_Detect:
         self.imgsz = check_img_size(self.img_size, s=self.stride)  # check img_size
 
         self.names = self.model.module.names if hasattr(self.model, 'module') else self.model.names  # get class names
+        
         if self.half:
             self.model.half()  # to FP16
+
+        print(self.model)
 
         # Second-stage classifier
         self.classify = False
@@ -95,6 +98,8 @@ class ROS_Detect:
     def callbackColorImage(self, msg):
         try:
             self.color_img_cv = self.bridge.imgmsg_to_cv2(msg, "bgr8")
+            #self.color_img_cv.set(cv2.CAP_PROP_BUFFERSIZE, 3)
+
             print("msg.encoding = ", msg.encoding)
             print("self.color_img_cv.shape = ", self.color_img_cv.shape)
 
@@ -108,18 +113,24 @@ class ROS_Detect:
     def inference(self, inference_image):
         print("Inference Function")
 
-        if self.device.type != 'cpu':
+        if self.device_two.type != 'cpu':
             self.model(torch.zeros(1, 3, self.img_size, self.img_size).to(self.device_two).type_as(next(self.model.parameters())))  # run once
 
         t0 = time.time()
-        im0s = self.inferenced_image.copy()
+        im0s = inference_image.copy()
 
         img = torch.from_numpy(inference_image).to(self.device_two)
+        print(img.size())
+        #img = letterbox(img0, self.img_size, stride=self.stride)[0]
+
 
         img = img.half() if self.half else img.float()  # uint8 to fp16/32
         img /= 255.0  # 0 - 255 to 0.0 - 1.0
-        if img.ndimension() == 3:
-            img = img.unsqueeze(0)
+        
+        #if img.ndimension() == 3:
+        #    img = img.unsqueeze(0)
+
+        print(img.size())
 
         # Inference
         t1 = time_synchronized()
